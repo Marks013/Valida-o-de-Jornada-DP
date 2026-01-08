@@ -1,0 +1,332 @@
+<Window x:Class="ValidadorJornada.Views.ValidacaoLoteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Validação em Lote" Height="700" Width="600"
+        ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+    
+    <Window.Resources>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000" Opacity="0.08" BlurRadius="8" ShadowDepth="2" Direction="270"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="TitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#BDBDBD"/>
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#388E3C"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Cabeçalho -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <TextBlock Text="📊 Validação em Lote" 
+                          FontSize="18" 
+                          FontWeight="Bold" 
+                          Foreground="#1976D2"
+                          Margin="0,0,0,5"/>
+                <TextBlock Text="Valide múltiplos horários de uma planilha Excel" 
+                          FontSize="12" 
+                          Foreground="#666666"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Seleção de Arquivo -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <TextBlock Text="📁 Arquivo Excel" Style="{StaticResource TitleStyle}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBox Grid.Column="0" 
+                             Text="{Binding CaminhoArquivo}" 
+                             IsReadOnly="True"
+                             Height="35"
+                             VerticalContentAlignment="Center"
+                             Padding="10,0"
+                             FontSize="12"
+                             Background="#FAFAFA"
+                             BorderBrush="#DDDDDD"
+                             BorderThickness="1"
+                             Margin="0,0,10,0"/>
+                    
+                    <Button Grid.Column="1" 
+                            Content="🔍 Selecionar" 
+                            Command="{Binding SelecionarArquivoCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            Height="35"
+                            Padding="15,0"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+        
+        <!-- NOVO: Instruções dos Formatos -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Background="#E3F2FD">
+            <Expander Header="ℹ️ Formatos Aceitos" IsExpanded="False" FontWeight="SemiBold" FontSize="12">
+                <StackPanel Margin="10,10,0,0">
+                    <!-- Relatório 110 -->
+                    <TextBlock Text="📋 Relatório 110 - Relação de Horário - Sistema Sênior" 
+                               FontWeight="Bold" 
+                               FontSize="12"
+                               Foreground="#1976D2"
+                               Margin="0,0,0,5"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Horários distribuídos por colunas individuais
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Colunas: I (Entrada), K (Saída), L (Entrada), N (Saída)
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Validação por linha completa
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Formato aceito: .xlsx
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,10">
+                        • Formato horário: HH:MM (ex: 08:00 12:00 13:00 17:00)
+                    </TextBlock>
+                    
+                    <!-- Agrupamento Coluna B -->
+                    <TextBlock Text="📋 Relação de Horários Criados - Sistema Sênior" 
+                               FontWeight="Bold" 
+                               FontSize="12"
+                               Foreground="#4CAF50"
+                               Margin="0,10,0,5"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Código na Coluna A
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Jornadas completas na Coluna B
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Formato aceito: .xlsx
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,3">
+                        • Formato horário: HH:MM (ex: 08:00 12:00 13:00 17:00)
+                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="#424242" Margin="15,0,0,0">
+                        • Horários agrupados em célula única
+                    </TextBlock>
+                </StackPanel>
+            </Expander>
+        </Border>
+        
+        <!-- Configurações de Validação -->
+        <Border Grid.Row="3" Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <TextBlock Text="⚙️ Configurações de Validação" Style="{StaticResource TitleStyle}"/>
+                <WrapPanel>
+                    <CheckBox Content="Períodos (4h máx)" 
+                             IsChecked="{Binding ValidarPeriodos}"
+                             Margin="0,0,15,5"
+                             FontSize="12"/>
+                    <CheckBox Content="Jornada (8h máx)" 
+                             IsChecked="{Binding ValidarJornada}"
+                             Margin="0,0,15,5"
+                             FontSize="12"/>
+                    <CheckBox Content="Intervalos" 
+                             IsChecked="{Binding ValidarIntervalos}"
+                             Margin="0,0,15,5"
+                             FontSize="12"/>
+                </WrapPanel>
+                <CheckBox Content="Usar horários agrupados (coluna B)" 
+                         IsChecked="{Binding UsarHorariosAgrupados}"
+                         Margin="0,10,0,0"
+                         FontSize="12"
+                         FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Progresso -->
+        <Border Grid.Row="4" Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <TextBlock Text="📈 Progresso" Style="{StaticResource TitleStyle}"/>
+                <ProgressBar Height="25" 
+                            Minimum="0" 
+                            Maximum="{Binding ProgressoTotal}"
+                            Value="{Binding ProgressoAtual}"
+                            BorderThickness="1"
+                            BorderBrush="#DDDDDD">
+                    <ProgressBar.Style>
+                        <Style TargetType="ProgressBar">
+                            <Setter Property="Foreground" Value="#2196F3"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Processando}" Value="False">
+                                    <Setter Property="Foreground" Value="#4CAF50"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ProgressBar.Style>
+                </ProgressBar>
+                <TextBlock Text="{Binding MensagemProgresso}" 
+                          FontSize="11" 
+                          Foreground="#666666"
+                          Margin="0,5,0,0"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Resumo -->
+        <Border Grid.Row="5" Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <TextBlock Text="📋 Resumo da Validação" Style="{StaticResource TitleStyle}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Column="0" 
+                            Background="#E8F5E9" 
+                            CornerRadius="6"
+                            Padding="15"
+                            Margin="0,0,5,0">
+                        <StackPanel>
+                            <TextBlock Text="✅ Válidos" 
+                                      FontSize="11" 
+                                      Foreground="#2E7D32"
+                                      FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalValidos}" 
+                                      FontSize="24" 
+                                      Foreground="#2E7D32"
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Grid.Column="1" 
+                            Background="#FFEBEE" 
+                            CornerRadius="6"
+                            Padding="15"
+                            Margin="5,0">
+                        <StackPanel>
+                            <TextBlock Text="❌ Erros" 
+                                      FontSize="11" 
+                                      Foreground="#C62828"
+                                      FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalErros}" 
+                                      FontSize="24" 
+                                      Foreground="#C62828"
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Grid.Column="2" 
+                            Background="#FFF3E0" 
+                            CornerRadius="6"
+                            Padding="15"
+                            Margin="5,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="⚠️ Avisos" 
+                                      FontSize="11" 
+                                      Foreground="#EF6C00"
+                                      FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalAvisos}" 
+                                      FontSize="24" 
+                                      Foreground="#EF6C00"
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                
+                <TextBlock Text="{Binding ResumoValidacao}" 
+                          FontSize="13" 
+                          FontWeight="SemiBold"
+                          HorizontalAlignment="Center"
+                          Margin="0,15,0,0"
+                          Foreground="#333333"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Botões de Ação -->
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="0"
+                    Content="▶ Validar Planilha" 
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ValidarCommand}"
+                    HorizontalAlignment="Stretch"
+                    Height="45"
+                    Margin="0,0,10,0"/>
+            
+            <Button Grid.Column="1"
+                    Content="📄 Gerar Relatório PDF" 
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding GerarRelatorioCommand}"
+                    Height="45"
+                    Padding="25,10"/>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,162 @@
+<Window x:Class="ValidadorJornada.Views.ConfigCodigoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Configuração - Banco de Códigos" Height="480" Width="550"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
+    
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toggle Ativo/Inativo -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+            <RadioButton x:Name="rbDesativado" Content="Desativado" 
+                         GroupName="Estado" Margin="0,0,20,0"
+                         FontSize="13" IsChecked="True"/>
+            <RadioButton x:Name="rbAtivado" Content="Ativado" 
+                         GroupName="Estado"
+                         FontSize="13"/>
+        </StackPanel>
+
+        <!-- Seleção de Arquivo -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+            <TextBlock Text="Arquivo de Códigos (Excel ou CSV)" FontSize="13" 
+                       FontWeight="SemiBold" Foreground="#2C3E50" 
+                       Margin="0,0,0,8"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox x:Name="txtArquivo" 
+                         Grid.Column="0"
+                         Padding="8"
+                         IsReadOnly="True"
+                         Background="#F5F5F5"/>
+                
+                <Button x:Name="btnSelecionar" 
+                        Grid.Column="1"
+                        Content="📂 Selecionar" 
+                        Padding="12,8" 
+                        Margin="10,0,0,0"
+                        Click="BtnSelecionar_Click"
+                        Background="White" 
+                        BorderBrush="#3498DB"
+                        Foreground="#3498DB" 
+                        Cursor="Hand"/>
+                
+                <Button x:Name="btnDiagnostico" 
+                        Grid.Column="2"
+                        Content="🔍 Diagnóstico" 
+                        Padding="12,8" 
+                        Margin="5,0,0,0"
+                        Click="BtnDiagnostico_Click"
+                        Background="White" 
+                        BorderBrush="#E67E22"
+                        Foreground="#E67E22" 
+                        IsEnabled="False"
+                        Cursor="Hand"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Barra de Progresso -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15" 
+                    Visibility="Collapsed" x:Name="pnlProgresso">
+            <TextBlock x:Name="txtProgresso" Text="Importando..." 
+                       FontSize="11" Foreground="#7F8C8D" Margin="0,0,0,5"/>
+            <ProgressBar x:Name="progressBar" Height="6" 
+                         Background="#E0E0E0" Foreground="#3498DB"/>
+            <TextBlock x:Name="txtDetalhesProgresso" Text="0 de 0 linhas processadas" 
+                       FontSize="10" Foreground="#95A5A6" Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <!-- Informações -->
+        <Border Grid.Row="3" Background="White" BorderBrush="#E0E0E0" 
+                BorderThickness="1" CornerRadius="6" Padding="15">
+            <StackPanel>
+                <TextBlock x:Name="txtDataAtualizacao" 
+                           Text="Última atualização: Nunca" 
+                           FontSize="12" Foreground="#7F8C8D"/>
+                <TextBlock x:Name="txtTotalCodigos" 
+                           Text="Total de códigos: 0" 
+                           FontSize="12" Foreground="#7F8C8D" 
+                           Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Instruções -->
+        <Border Grid.Row="4" Background="#F0F8FF" BorderBrush="#3498DB" 
+                BorderThickness="1" CornerRadius="6" Padding="15" 
+                Margin="0,15,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="ℹ️ Formato dos arquivos:" 
+                               FontSize="12" FontWeight="Bold" 
+                               Foreground="#2C3E50" Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="📊 EXCEL (.xlsx, .xls):" 
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="#2C3E50" Margin="0,0,0,5"/>
+                    <TextBlock Text="• Coluna A: Código (ex: J-001)" 
+                               FontSize="11" Foreground="#7F8C8D" 
+                               Margin="10,0,0,2"/>
+                    <TextBlock Text="• Coluna B: Horários (ex: 08:00 12:00 13:00 17:00)" 
+                               FontSize="11" Foreground="#7F8C8D"
+                               Margin="10,0,0,10"/>
+                    
+                    <TextBlock Text="📄 CSV (.csv):" 
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="#2C3E50" Margin="0,0,0,5"/>
+                    <TextBlock Text="• Separadores aceitos: vírgula (,), ponto-e-vírgula (;) ou tab" 
+                               FontSize="11" Foreground="#7F8C8D"
+                               Margin="10,0,0,2"/>
+                    <TextBlock Text="• Formato: Código,Horários" 
+                               FontSize="11" Foreground="#7F8C8D"
+                               Margin="10,0,0,2"/>
+                    <TextBlock Text="• Exemplo: J001,08:00 12:00 13:00 17:00" 
+                               FontSize="11" Foreground="#7F8C8D"
+                               FontFamily="Consolas"
+                               Margin="10,0,0,10"/>
+                    
+                    <Border Background="#FFF9E6" BorderBrush="#FFA000" 
+                            BorderThickness="1" CornerRadius="4" Padding="8"
+                            Margin="0,5,0,0">
+                        <StackPanel>
+                            <TextBlock Text="⚠️ IMPORTANTE:" 
+                                       FontSize="10" FontWeight="Bold"
+                                       Foreground="#F57C00"/>
+                            <TextBlock Text="• Primeira linha será ignorada (cabeçalho)" 
+                                       FontSize="10" Foreground="#F57C00"
+                                       Margin="0,3,0,0"/>
+                            <TextBlock Text="• Os códigos serão adicionados aos existentes" 
+                                       FontSize="10" Foreground="#F57C00"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Botões -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" 
+                    HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button x:Name="btnSalvar" Content="Salvar" 
+                    Padding="20,8" Margin="0,0,10,0"
+                    Click="BtnSalvar_Click"
+                    Background="#27AE60" Foreground="White"
+                    BorderThickness="0" Cursor="Hand"/>
+            <Button Content="Cancelar" Padding="20,8"
+                    Click="BtnCancelar_Click"
+                    Background="#E0E0E0" Foreground="#2C3E50"
+                    BorderThickness="0" Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>

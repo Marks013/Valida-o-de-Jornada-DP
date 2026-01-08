@@ -1,0 +1,440 @@
+<Window x:Class="ValidadorJornada.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ValidadorJornada.Views"
+        xmlns:converters="clr-namespace:ValidadorJornada.Converters"
+        Title="Validador de Jornada DP" 
+        Height="720" Width="550"
+        MinHeight="600" MinWidth="500"
+        ResizeMode="CanResize" 
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5">
+    
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:BoolToJornadaLabelConverter x:Key="BoolToJornadaLabelConverter"/>
+    </Window.Resources>
+    
+    <Grid>
+        <!-- Conteúdo Principal -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="25">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Checkbox Validar Interjornada -->
+                <CheckBox Grid.Row="0" 
+                          IsChecked="{Binding ValidarInterjornadaAtivo}" 
+                          Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Validar Interjornada" 
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#1A1A1A"
+                                   VerticalAlignment="Center"/>
+                        <Border Width="18" Height="18" 
+                                Margin="8,0,0,0" 
+                                Background="#2980B9" 
+                                CornerRadius="9" 
+                                Cursor="Help"
+                                ToolTipService.InitialShowDelay="200"
+                                ToolTipService.ShowDuration="30000">
+                            <Border.ToolTip>
+                                <ToolTip MaxWidth="400" Background="#2C3E50" Foreground="White" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="O que é Interjornada?" 
+                                                   FontWeight="Bold" 
+                                                   FontSize="13"
+                                                   Margin="0,0,0,8"/>
+                                        <TextBlock TextWrapping="Wrap" FontSize="12" LineHeight="18">
+                                            <Run Text="O intervalo interjornada é um descanso mínimo de 11 horas consecutivas entre o fim de uma jornada de trabalho e o início da próxima, conforme o Art. 66 da CLT, visando garantir a recuperação física e mental do trabalhador e prevenir acidentes e sobrecarga."/>
+                                            <LineBreak/><LineBreak/>
+                                            <Run Text="As regras estabelecem que o não cumprimento gera o pagamento das horas suprimidas como hora extra, com a possibilidade de penalidades administrativas e ações trabalhistas para a empresa."/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
+                            <TextBlock Text="?" 
+                                       Foreground="White" 
+                                       FontWeight="Bold" 
+                                       FontSize="12"
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </CheckBox>
+
+                <!-- Checkbox Auto-Formatar -->
+                <CheckBox Grid.Row="0" 
+                          IsChecked="{Binding AutoFormatarHorarios}" 
+                          Margin="0,0,0,15"
+                          HorizontalAlignment="Right">
+                    <TextBlock Text="Auto-formatar horários" 
+                               FontSize="11" 
+                               Foreground="#424242"
+                               VerticalAlignment="Center"/>
+                </CheckBox>
+
+                <!-- Campo Horários Jornada 1 -->
+                <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                    <TextBlock Text="{Binding ValidarInterjornadaAtivo, Converter={StaticResource BoolToJornadaLabelConverter}}" 
+                               FontSize="14" FontWeight="SemiBold" 
+                               Foreground="#1A1A1A" Margin="0,0,0,8"/>
+                    <Border BorderBrush="#BDBDBD" BorderThickness="2" 
+                            CornerRadius="6" Background="White">
+                        <Grid>
+                            <TextBox x:Name="txtHorarios"
+                                     Text="{Binding Horarios, UpdateSourceTrigger=PropertyChanged}" 
+                                     FontSize="16" Padding="12" 
+                                     Foreground="#1A1A1A"
+                                     BorderThickness="0" Background="Transparent">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding ValidarCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Content="⟳" Width="30" Height="30" 
+                                    HorizontalAlignment="Right" Margin="5"
+                                    Command="{Binding ValidarCommand}"
+                                    Background="Transparent" BorderThickness="0"
+                                    Foreground="#424242" Cursor="Hand"
+                                    FontSize="16"
+                                    ToolTip="Validar horários (Enter)"/>
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="Digite 2 ou 4 horários separados por espaço (HH:MM)" 
+                               FontSize="11" Foreground="#616161" Margin="5,5,0,0"/>
+                </StackPanel>
+
+                <!-- Campo Horários Jornada 2 -->
+                <Grid Grid.Row="2" Margin="0,0,0,20">
+                    <!-- Modo Interjornada Normal -->
+                    <StackPanel Visibility="{Binding ValidarInterjornadaAtivo, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ModoJornadaSabado}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        
+                        <TextBlock Text="Jornada Domingo/Feriado" 
+                                   FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="#1A1A1A" Margin="0,0,0,8"/>
+                        <Border BorderBrush="#BDBDBD" BorderThickness="2" 
+                                CornerRadius="6" Background="White">
+                            <Grid>
+                                <TextBox x:Name="txtHorariosDomingoFeriado"
+                                         Text="{Binding HorariosDomingoFeriado, UpdateSourceTrigger=PropertyChanged}" 
+                                         FontSize="16" Padding="12" 
+                                         Foreground="#1A1A1A"
+                                         BorderThickness="0" Background="Transparent">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding ValidarCommand}"/>
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <Button Content="⟳" Width="30" Height="30" 
+                                        HorizontalAlignment="Right" Margin="5"
+                                        Command="{Binding ValidarCommand}"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="#424242" Cursor="Hand"
+                                        FontSize="16"
+                                        ToolTip="Validar horários (Enter)"/>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="Digite os horários do domingo/feriado (HH:MM)" 
+                                   FontSize="11" Foreground="#616161" Margin="5,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Modo Jornada Sábado -->
+                    <StackPanel Visibility="{Binding ModoJornadaSabado, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="Jornada Sábado (4 horas)" 
+                                   FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="#1A1A1A" Margin="0,0,0,8"/>
+                        <Border BorderBrush="#27AE60" BorderThickness="2" 
+                                CornerRadius="6" Background="#F0FFF4">
+                            <Grid>
+                                <TextBox Text="{Binding HorariosDomingoFeriado, UpdateSourceTrigger=PropertyChanged}" 
+                                         FontSize="16" Padding="12" 
+                                         Foreground="#1A1A1A"
+                                         BorderThickness="0" Background="Transparent">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding ValidarCommand}"/>
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <Button Content="⟳" Width="30" Height="30" 
+                                        HorizontalAlignment="Right" Margin="5"
+                                        Command="{Binding ValidarCommand}"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="#27AE60" Cursor="Hand"
+                                        FontSize="16" FontWeight="Bold"
+                                        ToolTip="Validar horários (Enter)"/>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="Digite 2 horários para completar 44h semanais (Ex: 08:00 12:00)" 
+                                   FontSize="11" Foreground="#27AE60" FontWeight="SemiBold" Margin="5,5,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Resultado Validação -->
+                <Border Grid.Row="3" 
+                        Background="{Binding CorResultado}" 
+                        BorderBrush="{Binding BorderResultado}"
+                        BorderThickness="2" CornerRadius="8" 
+                        Padding="20" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="{Binding MensagemResultado}" 
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="#1A1A1A" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding DetalhesResultado}" 
+                                   FontSize="12" Foreground="#424242"
+                                   Margin="0,10,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding DetalhesResultado, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Mensagem Interjornada -->
+                <Border Grid.Row="4"
+                        Background="#E3F2FD" 
+                        BorderBrush="#2196F3" 
+                        BorderThickness="2" 
+                        CornerRadius="6" 
+                        Padding="15" 
+                        Margin="0,0,0,15"
+                        Visibility="{Binding MensagemInterjornada, Converter={StaticResource StringToVisibilityConverter}}">
+                    <TextBlock Text="{Binding MensagemInterjornada}" 
+                               FontSize="13" 
+                               FontWeight="SemiBold"
+                               Foreground="{Binding CorInterjornada}" 
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Histórico -->
+                <StackPanel Grid.Row="5" Margin="0,0,0,20">
+                    <TextBlock Text="Últimas Validações" 
+                               FontSize="13" FontWeight="SemiBold" 
+                               Foreground="#1A1A1A" Margin="0,0,0,8"/>
+                    <Border BorderBrush="#BDBDBD" BorderThickness="1" 
+                            CornerRadius="6" Background="White" Padding="12">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      MaxHeight="200">
+                            <ItemsControl ItemsSource="{Binding HistoricoRecente}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="#EEEEEE" 
+                                                BorderThickness="0,0,0,1" 
+                                                Padding="0,6"
+                                                Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding}" 
+                                                       FontSize="11" 
+                                                       Foreground="#424242" 
+                                                       TextWrapping="Wrap"
+                                                       LineHeight="16"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+
+                <!-- Botões -->
+                <Grid Grid.Row="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Grid.Column="1" 
+                                Content="📊 Validação em Lote" 
+                                Command="{Binding AbrirValidacaoLoteCommand}"
+                                Padding="18,10" 
+                                Margin="0,0,10,0"
+                                Background="White" 
+                                Foreground="#FF9800"
+                                FontWeight="SemiBold"
+                                BorderBrush="#FF9800" 
+                                BorderThickness="2"
+                                Cursor="Hand"
+                                ToolTip="Validar múltiplos horários de uma planilha Excel">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="border"
+                                                        Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="6"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                     VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#FFF3E0"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        
+                        <Button Grid.Column="2" 
+                                Content="Ver Histórico" 
+                                Command="{Binding VerHistoricoCommand}"
+                                Padding="18,10" 
+                                Margin="0,0,10,0"
+                                Background="White" 
+                                Foreground="#2196F3"
+                                FontWeight="SemiBold"
+                                BorderBrush="#2196F3" 
+                                BorderThickness="2"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="border"
+                                                        Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="6"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                     VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#E3F2FD"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        
+                        <Button Grid.Column="3" 
+                                Content="⚙ Configurações" 
+                                Command="{Binding ConfigurarCodigosCommand}"
+                                Padding="18,10"
+                                Background="White" 
+                                Foreground="#616161"
+                                FontWeight="SemiBold"
+                                BorderBrush="#BDBDBD" 
+                                BorderThickness="2"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="border"
+                                                        Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="6"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                     VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#F5F5F5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                    
+                    <StackPanel Grid.Row="1"
+	                            Orientation="Horizontal"				
+                                HorizontalAlignment="Center"
+							    Margin="0,12,0,0">
+                        <TextBlock Text="@Samuel-Fernandes - " 
+                                   FontSize="10" 
+                                   Foreground="Black"
+                                   FontWeight="Bold"/>
+						<TextBlock Text="{Binding AppVersion}"	   
+                                   FontSize="10"   
+                                   Foreground="#666"/>
+                    </StackPanel>							 
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+        
+        <!-- Loading Overlay -->
+        <Grid x:Name="LoadingOverlay" 
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+              Background="#80000000">
+            <Border Background="White" 
+                    CornerRadius="10"
+                    Width="150" Height="100"
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center">
+                <StackPanel VerticalAlignment="Center" 
+                            HorizontalAlignment="Center">
+                    <Grid Width="40" Height="40">
+                        <Ellipse StrokeThickness="3" Stroke="#E0E0E0"/>
+                        <Ellipse StrokeThickness="3" 
+                                 Stroke="#2196F3"
+                                 StrokeDashArray="10 5"
+                                 StrokeDashCap="Round"
+                                 RenderTransformOrigin="0.5,0.5">
+                            <Ellipse.RenderTransform>
+                                <RotateTransform x:Name="SpinnerRotation" Angle="0"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="SpinnerRotation" 
+                                                             Storyboard.TargetProperty="Angle" 
+                                                             From="0" To="360" 
+                                                             Duration="0:0:1.5"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </Grid>
+                    <TextBlock Text="Processando..." 
+                               FontSize="12" 
+                               Foreground="#616161"
+                               Margin="0,10,0,0"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

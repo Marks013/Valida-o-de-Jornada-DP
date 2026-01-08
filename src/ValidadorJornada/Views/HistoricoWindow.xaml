@@ -1,0 +1,180 @@
+<Window x:Class="ValidadorJornada.Views.HistoricoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:ValidadorJornada.Converters"
+        Title="Histórico Completo" Height="560" Width="600"
+        ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
+    
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    </Window.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Cabeçalho -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Histórico de Validações" 
+                       FontSize="16" FontWeight="Bold" 
+                       Foreground="#2C3E50" 
+                       VerticalAlignment="Center"/>
+            
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Right">
+                <CheckBox x:Name="chkSelecionarTodos"
+                          Content="Selecionar todos"
+                          Checked="ChkSelecionarTodos_Changed"
+                          Unchecked="ChkSelecionarTodos_Changed"
+                          VerticalAlignment="Center"
+                          Margin="0,0,15,0"/>
+                
+                <TextBlock Text="Até 200 registros • Expira em 40 dias" 
+                           FontSize="10" Foreground="#95A5A6" 
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Lista com checkboxes -->
+        <Border Grid.Row="1" BorderBrush="#E0E0E0" BorderThickness="1" 
+                CornerRadius="6" Background="White">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="lstHistorico" Margin="10">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#F0F0F0" 
+                                    BorderThickness="0,0,0,1" 
+                                    Padding="8,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Column="0"
+                                              IsChecked="{Binding IsSelected}"
+                                              VerticalAlignment="Top"
+                                              Margin="0,0,10,0"
+                                              Checked="ChkItem_Changed"
+                                              Unchecked="ChkItem_Changed"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Texto}" 
+                                               FontSize="11" 
+                                               Foreground="#7F8C8D" 
+                                               TextWrapping="Wrap"
+                                               LineHeight="16"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Status -->
+        <Border Grid.Row="2" 
+                Background="#E8F5E9" 
+                BorderBrush="#4CAF50" 
+                BorderThickness="1" 
+                CornerRadius="4" 
+                Padding="10"
+                Margin="0,10,0,0"
+                Visibility="{Binding ElementName=txtStatus, Path=Text, Converter={StaticResource StringToVisibilityConverter}}">
+            <TextBlock x:Name="txtStatus"
+                       FontSize="11"
+                       Foreground="#2E7D32"
+                       HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Botões -->
+        <Grid Grid.Row="3" Margin="0,15,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="btnExportar"
+                    Grid.Column="1"
+                    Content="📄 Gerar Documento" 
+                    Click="BtnExportar_Click"
+                    Padding="18,10" 
+                    Margin="0,0,10,0"
+                    Background="#2196F3" 
+                    Foreground="White"
+                    BorderThickness="0"
+                    FontWeight="SemiBold"
+                    Cursor="Hand"
+                    IsEnabled="False">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="6"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                         VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#1976D2"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="border" Property="Background" Value="#BDBDBD"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button x:Name="btnLimpar"
+                    Grid.Column="2"
+                    Content="🗑️ Limpar Histórico" 
+                    Click="BtnLimpar_Click"
+                    Padding="18,10"
+                    Background="White" 
+                    Foreground="#E74C3C"
+                    BorderBrush="#E74C3C" 
+                    BorderThickness="2"
+                    FontWeight="SemiBold"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="6"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                         VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="border" Property="Background" Value="#FFEBEE"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>
