@@ -1,0 +1,45 @@
+{
+  "jornadas": [
+    {
+      "duracaoMinutos": 240,
+      "nome": "Jornada Parcial 04:00",
+      "horasSemanais": 24,
+      "horasMensais": 120,
+      "intervaloMin": 0,
+      "intervaloMax": 0,
+      "diasValidos": ["util", "sabado"]
+    },
+    {
+      "duracaoMinutos": 350,
+      "nome": "Jornada Reduzida 05:50",
+      "horasSemanais": 35,
+      "horasMensais": 175,
+      "intervaloMin": 15,
+      "intervaloMax": 120,
+      "diasValidos": ["util"]
+    },
+    {
+      "duracaoMinutos": 440,
+      "nome": "Jornada de 07:20",
+      "horasSemanais": 44,
+      "horasMensais": 220,
+      "intervaloMin": 60,
+      "intervaloMax": 120,
+      "diasValidos": ["util", "sabado"]
+    },
+    {
+      "duracaoMinutos": 480,
+      "nome": "Jornada de 08:00",
+      "horasSemanais": 44,
+      "horasMensais": 220,
+      "intervaloMin": 60,
+      "intervaloMax": 120,
+      "diasValidos": ["util"]
+    }
+  ],
+  "periodoMaximoHoras": 10.0,
+  "interjornadaMinimaMinutos": 660,
+  "periodoMaximoSemIntervaloMinutos": 240,
+  "cacheHistoricoMinutos": 30,
+  "skipHeadersOnImport": true
+}
