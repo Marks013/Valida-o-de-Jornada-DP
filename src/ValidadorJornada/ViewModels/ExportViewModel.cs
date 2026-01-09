@@ -1,28 +1,33 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using ValidadorJornada.Core.Services;
-using ValidadorJornada.ViewModels;
 
 namespace ValidadorJornada.ViewModels
 {
+    /// <summary>
+    /// ViewModel para ExportDialog - Gerencia apenas DataReferencia global
+    /// 
+    /// NOTA: Este ViewModel é usado APENAS no modo "Múltiplos Horários".
+    /// No modo "Multi-Colaborador", os dados são gerenciados diretamente 
+    /// pela classe JornadaComMultiplosColaboradores no code-behind.
+    /// 
+    /// Responsabilidades:
+    /// - DataReferencia: Data global para o modo "Múltiplos Horários"
+    /// - ValidarData: Validação da data conforme regras de negócio
+    /// - MensagemStatus: Feedback visual de validação
+    /// </summary>
     public class ExportViewModel : INotifyPropertyChanged
     {
         private readonly ExportService _exportService;
         private DateTime _dataReferencia;
         private string _mensagemStatus = string.Empty;
         private bool _isProcessing = false;
-        private string _matricula = string.Empty;
-        private string _nome = string.Empty;
-        private string _cargo = string.Empty;
 
         public ExportViewModel(ExportService exportService)
         {
             _exportService = exportService;
             _dataReferencia = DateTime.Today;
-            
-            ConfirmarCommand = new RelayCommand(Confirmar, CanConfirmar);
         }
 
         public DateTime DataReferencia
@@ -33,36 +38,6 @@ namespace ValidadorJornada.ViewModels
                 _dataReferencia = value;
                 OnPropertyChanged();
                 ValidarData();
-            }
-        }
-
-        public string Matricula
-        {
-            get => _matricula;
-            set
-            {
-                _matricula = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Nome
-        {
-            get => _nome;
-            set
-            {
-                _nome = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Cargo
-        {
-            get => _cargo;
-            set
-            {
-                _cargo = value;
-                OnPropertyChanged();
             }
         }
 
@@ -83,30 +58,10 @@ namespace ValidadorJornada.ViewModels
             {
                 _isProcessing = value;
                 OnPropertyChanged();
-                CommandManager.InvalidateRequerySuggested();
             }
         }
 
-        public ICommand ConfirmarCommand { get; }
         public ExportResult? Resultado { get; private set; }
-
-        private void Confirmar()
-        {
-            if (!ValidarData())
-                return;
-
-            IsProcessing = true;
-            MensagemStatus = "Gerando PDF...";
-
-            Resultado = new ExportResult { Sucesso = true };
-            
-            IsProcessing = false;
-        }
-
-        private bool CanConfirmar()
-        {
-            return !IsProcessing && ValidarData();
-        }
 
         private bool ValidarData()
         {
