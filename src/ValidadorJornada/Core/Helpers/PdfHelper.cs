@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using ValidadorJornada.Views;
+using ValidadorJornada.Core.Models;
 
 namespace ValidadorJornada.Core.Helpers
 {
@@ -54,9 +54,26 @@ namespace ValidadorJornada.Core.Helpers
             {
                 column.Spacing(8);
 
-                foreach (var jornada in jornadas)
+                // Agrupa jornadas idênticas
+                var gruposJornadas = jornadas
+                    .GroupBy(j => new { j.Jornada, j.Codigo, j.DataAlteracao })
+                    .Select(g => new
+                    {
+                        Jornada = g.Key.Jornada,
+                        Codigo = g.Key.Codigo,
+                        DataAlteracao = g.Key.DataAlteracao,
+                        Colaboradores = g.ToList()
+                    });
+
+                foreach (var grupo in gruposJornadas)
                 {
-                    column.Item().Element(c => ComposeJornadaBlockCompact(c, jornada));
+                    column.Item().Element(c => ComposeJornadaBlockAgrupado(
+                        c, 
+                        grupo.Colaboradores, 
+                        grupo.Jornada, 
+                        grupo.Codigo, 
+                        grupo.DataAlteracao
+                    ));
                 }
 
                 // Assinatura
@@ -69,49 +86,69 @@ namespace ValidadorJornada.Core.Helpers
             });
         }
 
-        private static void ComposeJornadaBlockCompact(IContainer container, JornadaEditavel jornada)
+        private static void ComposeJornadaBlockAgrupado(
+            IContainer container, 
+            List<JornadaEditavel> colaboradores,
+            string jornada,
+            string? codigo,
+            DateTime dataAlteracao)
         {
             container.Border(1).BorderColor(Colors.Grey.Lighten1).Padding(10).Column(column =>
             {
                 column.Spacing(6);
 
-                // Linha 1: Matrícula + Nome
-                column.Item().Row(row =>
+                // Lista de Colaboradores (separados por barra)
+                foreach (var colab in colaboradores)
                 {
-                    row.ConstantItem(60).Text("Matrícula:").Bold().FontSize(9);
-                    row.ConstantItem(120).BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
-                        .PaddingLeft(4).PaddingBottom(2)
-                        .Text(string.IsNullOrWhiteSpace(jornada.Matricula) ? "" : jornada.Matricula)
-                        .FontSize(9);
+                    var isUltimo = colab == colaboradores.Last();
                     
-                    row.ConstantItem(15);
-                    
-                    row.ConstantItem(40).Text("Nome:").Bold().FontSize(9);
-                    row.RelativeItem().BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
-                        .PaddingLeft(4).PaddingBottom(2)
-                        .Text(string.IsNullOrWhiteSpace(jornada.Nome) ? "" : jornada.Nome)
-                        .FontSize(9);
-                });
+                    // Linha 1: Matrícula + Nome
+                    column.Item().Row(row =>
+                    {
+                        row.ConstantItem(60).Text("Matrícula:").Bold().FontSize(9);
+                        row.ConstantItem(120).BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
+                            .PaddingLeft(4).PaddingBottom(2)
+                            .Text(string.IsNullOrWhiteSpace(colab.Matricula) ? "" : colab.Matricula)
+                            .FontSize(9);
+                        
+                        row.ConstantItem(15);
+                        
+                        row.ConstantItem(40).Text("Nome:").Bold().FontSize(9);
+                        row.RelativeItem().BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
+                            .PaddingLeft(4).PaddingBottom(2)
+                            .Text(string.IsNullOrWhiteSpace(colab.Nome) ? "" : colab.Nome)
+                            .FontSize(9);
+                    });
 
-                // Linha 2: Cargo + Data
-                column.Item().Row(row =>
+                    // Linha 2: Cargo
+                    column.Item().Row(row =>
+                    {
+                        row.ConstantItem(40).Text("Cargo:").Bold().FontSize(9);
+                        row.RelativeItem().BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
+                            .PaddingLeft(4).PaddingBottom(2)
+                            .Text(string.IsNullOrWhiteSpace(colab.Cargo) ? "" : colab.Cargo)
+                            .FontSize(9);
+                    });
+
+                    // Barra separadora (exceto último)
+                    if (!isUltimo)
+                    {
+                        column.Item().PaddingVertical(4).LineHorizontal(1)
+                            .LineColor(Colors.Grey.Lighten2);
+                    }
+                }
+
+                // Data da Alteração (única para o grupo)
+                column.Item().PaddingTop(6).Row(row =>
                 {
-                    row.ConstantItem(40).Text("Cargo:").Bold().FontSize(9);
-                    row.RelativeItem().BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
-                        .PaddingLeft(4).PaddingBottom(2)
-                        .Text(string.IsNullOrWhiteSpace(jornada.Cargo) ? "" : jornada.Cargo)
-                        .FontSize(9);
-                    
-                    row.ConstantItem(15);
-                    
                     row.ConstantItem(100).Text("Data da Alteração:").Bold().FontSize(9);
                     row.ConstantItem(80).BorderBottom(1).BorderColor(Colors.Grey.Lighten1)
                         .PaddingLeft(4).PaddingBottom(2)
-                        .Text(jornada.DataAlteracao.ToString("dd/MM/yyyy"))
+                        .Text(dataAlteracao.ToString("dd/MM/yyyy"))
                         .FontSize(9);
                 });
 
-                // Jornada + Código (se existir)
+                // Jornada + Código (única para o grupo)
                 column.Item().PaddingTop(4).Background(Colors.Grey.Lighten3)
                     .Padding(8).Row(row =>
                     {
@@ -120,18 +157,18 @@ namespace ValidadorJornada.Core.Helpers
                             col.Item().Text("Jornada:").Bold().FontSize(9)
                                 .FontColor(Colors.Grey.Darken2);
                             
-                            col.Item().PaddingTop(2).Text(jornada.Jornada)
+                            col.Item().PaddingTop(2).Text(jornada)
                                 .FontSize(11).Bold().FontColor(Colors.Blue.Darken1);
                         });
                         
-                        if (!string.IsNullOrWhiteSpace(jornada.Codigo))
+                        if (!string.IsNullOrWhiteSpace(codigo))
                         {
                             row.ConstantItem(80).Column(col =>
                             {
                                 col.Item().Text("Código:").Bold().FontSize(9)
                                     .FontColor(Colors.Grey.Darken2);
                                 
-                                col.Item().PaddingTop(2).Text(jornada.Codigo)
+                                col.Item().PaddingTop(2).Text(codigo)
                                     .FontSize(11).Bold().FontColor(Colors.Green.Darken1);
                             });
                         }
