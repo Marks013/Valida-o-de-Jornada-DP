@@ -1,5 +1,5 @@
 #define MyAppName "Validador de Jornada DP"
-#define MyAppVersion "4.1.2"
+#define MyAppVersion "5.1.2"
 #define MyAppPublisher "Samuel Fernandes - DP"
 #define MyAppExeName "ValidadorJornada.exe"
 

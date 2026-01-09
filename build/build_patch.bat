@@ -111,8 +111,8 @@ for %%f in ("%PATCH_DIR%\x64\*.exe" "%PATCH_DIR%\x86\*.exe") do (
     )
 )
 
-:: [4/5]Limpar arquivos desnecessários
-echo [4/5] Limpar arquivos desnecessários...
+:: [4/5]Limpar arquivos desnecessarios
+echo [4/5] Limpar arquivos desnecessarios...
 del "%RELEASE_X64%\*.pdb" /Q 2>nul
 del "%RELEASE_X64%\*.xml" /Q 2>nul
 del "%RELEASE_X64%\createdump.exe" /Q 2>nul
