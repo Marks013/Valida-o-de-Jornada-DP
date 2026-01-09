@@ -8,16 +8,16 @@
     <AssemblyName>ValidadorJornada</AssemblyName>
     
     <!-- *** VERSÃO CENTRALIZADA *** -->
-    <Version>4.1.2</Version>
-    <AssemblyVersion>4.1.2</AssemblyVersion>
-    <FileVersion>4.1.2.0</FileVersion>
-    <InformationalVersion>02/12/2025</InformationalVersion>
+    <Version>5.1.2</Version>
+    <AssemblyVersion>5.1.2</AssemblyVersion>
+    <FileVersion>5.1.2.0</FileVersion>
+    <InformationalVersion>08/01/2026</InformationalVersion>
     
     <!-- *** METADADOS *** -->
     <Authors>Samuel Fernandes</Authors>
     <Company>Samuel-DP</Company>
     <Product>Validador de Jornada DP</Product>
-    <Copyright>Copyright © 2025</Copyright>
+    <Copyright>Copyright © 2026</Copyright>
     <Description>Sistema de validação de jornadas de trabalho CLT</Description>
     
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
