@@ -1,10 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ValidadorJornada.Core.Models;
 using ValidadorJornada.Core.Helpers;
-using ValidadorJornada.Views;
 
 namespace ValidadorJornada.Core.Services
 {
@@ -73,7 +72,7 @@ namespace ValidadorJornada.Core.Services
 
         private string GerarNomeArquivo(DateTime data)
         {
-            var nomeBase = $"Relatorio_Jornadas_{data:dd-MM-yyyy}";
+            var nomeBase = $"Alteração_de_Jornada_{data:dd-MM-yyyy}";
             var nome = PdfHelper.SanitizeFileName(nomeBase) + ".pdf";
             
             var fullPath = Path.Combine(_exportPath, nome);
