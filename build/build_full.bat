@@ -24,16 +24,16 @@ if "%VERSION%"=="" (
 )
 
 :: Certificado HTTPS
-echo [0/9] Configurando certificado HTTPS...
+echo [0/10] Configurando certificado HTTPS...
 dotnet dev-certs https --trust >nul 2>&1
 
-:: [1/9] Limpar
-echo [1/9] Limpando builds anteriores...
+:: [1/10] Limpar
+echo [1/10] Limpando builds anteriores...
 dotnet clean --nologo -v q 2>nul
 if exist "bin" rd /s /q "bin" 2>nul
 if exist "obj" rd /s /q "obj" 2>nul
 
-:: [2/9] Restaurar
+:: [2/10] Restaurar
 echo [2/9] Restaurando dependencias...
 dotnet restore --nologo -v q
 if errorlevel 1 (
@@ -42,8 +42,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: [3/9] Compilar x64
-echo [3/9] Compilando x64...
+:: [3/10] Compilar x64
+echo [3/10] Compilando x64...
 dotnet publish -c Release -r win-x64 --self-contained true ^
     /p:PublishSingleFile=false /p:PublishTrimmed=false --nologo -v q
 
@@ -53,8 +53,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: [4/9] Compilar x86
-echo [4/9] Compilando x86...
+:: [4/10] Compilar x86
+echo [4/10] Compilando x86...
 dotnet publish -c Release -r win-x86 --self-contained true ^
     /p:PublishSingleFile=false /p:PublishTrimmed=false --nologo -v q
 
@@ -64,24 +64,24 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: [5/9] Assinar x64
-echo [5/9] Assinando x64...
+:: [5/10] Assinar x64
+echo [5/10] Assinando x64...
 set "EXE_X64=bin\Release\net8.0-windows\win-x64\publish\ValidadorJornada.exe"
 if exist "%EXE_X64%" (
     powershell -ExecutionPolicy Bypass -File "%ROOT_DIR%\build\sign.ps1" -ExePath "%CD%\%EXE_X64%" >nul 2>&1
     if errorlevel 1 echo AVISO: Assinatura x64 falhou
 )
 
-:: [6/9] Assinar x86
-echo [6/9] Assinando x86...
+:: [6/10] Assinar x86
+echo [6/10] Assinando x86...
 set "EXE_X86=bin\Release\net8.0-windows\win-x86\publish\ValidadorJornada.exe"
 if exist "%EXE_X86%" (
     powershell -ExecutionPolicy Bypass -File "%ROOT_DIR%\build\sign.ps1" -ExePath "%CD%\%EXE_X86%" >nul 2>&1
     if errorlevel 1 echo AVISO: Assinatura x86 falhou
 )
 
-:: [7/9] Copiar para releases
-echo [7/9] Copiando para releases\%VERSION%\...
+:: [7/10] Copiar para releases
+echo [7/10] Copiando para releases\%VERSION%\...
 set "RELEASE_BASE=%ROOT_DIR%\releases\%VERSION%"
 set "RELEASE_X64=%RELEASE_BASE%\x64"
 set "RELEASE_X86=%RELEASE_BASE%\x86"
@@ -132,8 +132,67 @@ echo OK: Arquivos copiados
 dir "%RELEASE_X64%\ValidadorJornada.exe" 2>nul | find "ValidadorJornada.exe"
 dir "%RELEASE_X86%\ValidadorJornada.exe" 2>nul | find "ValidadorJornada.exe"
 
-:: [8/9] Limpar arquivos desnecessarios
-echo [8/9] Limpar arquivos desnecessarios...
+:: [8/10] Ofuscar com Obfuscar x64
+echo [8/10] Ofuscando com Obfuscar x64...
+set "PS_SCRIPT=%~dp0obfuscar_protect.ps1"
+
+:: Verificar se DLL existe
+if not exist "%RELEASE_X64%\ValidadorJornada.dll" (
+    echo ERRO: ValidadorJornada.dll nao encontrado em %RELEASE_X64%
+    echo.
+    echo DIAGNOSTICO:
+    dir "%RELEASE_X64%\*.dll" 2>nul | find "ValidadorJornada"
+    pause
+    exit /b 1
+)
+
+echo Ofuscando ValidadorJornada.dll...
+
+powershell -ExecutionPolicy Bypass -File "%PS_SCRIPT%" ^
+    -InputFile "%RELEASE_X64%\ValidadorJornada.dll" ^
+    -OutputFile "%RELEASE_X64%\ValidadorJornada_protected.dll"
+
+if errorlevel 1 (
+    echo.
+    echo ERRO: Ofuscacao x64 falhou
+    echo.
+    pause
+    exit /b 1
+)
+
+:: Substituir DLL
+del "%RELEASE_X64%\ValidadorJornada.dll"
+ren "%RELEASE_X64%\ValidadorJornada_protected.dll" "ValidadorJornada.dll"
+
+echo OK: DLL x64 ofuscada com sucesso
+
+:: [8/10] Ofuscar com Obfuscar x86
+echo [8/10] Ofuscando com Obfuscar x86...
+
+if not exist "%RELEASE_X86%\ValidadorJornada.dll" (
+    echo ERRO: ValidadorJornada.dll nao encontrado em %RELEASE_X86%
+    pause
+    exit /b 1
+)
+
+powershell -ExecutionPolicy Bypass -File "%PS_SCRIPT%" ^
+    -InputFile "%RELEASE_X86%\ValidadorJornada.dll" ^
+    -OutputFile "%RELEASE_X86%\ValidadorJornada_protected.dll"
+
+if errorlevel 1 (
+    echo ERRO: Ofuscacao x86 falhou
+    pause
+    exit /b 1
+)
+
+:: Substituir DLL
+del "%RELEASE_X86%\ValidadorJornada.dll"
+ren "%RELEASE_X86%\ValidadorJornada_protected.dll" "ValidadorJornada.dll"
+
+echo OK: DLL x86 ofuscada com sucesso
+
+:: [8/10] Limpar arquivos desnecessarios
+echo [8/10] Limpar arquivos desnecessarios...
 del "%RELEASE_X64%\*.pdb" /Q 2>nul
 del "%RELEASE_X64%\*.xml" /Q 2>nul
 del "%RELEASE_X64%\createdump.exe" /Q 2>nul
@@ -143,8 +202,8 @@ del "%RELEASE_X86%\*.xml" /Q 2>nul
 del "%RELEASE_X86%\createdump.exe" /Q 2>nul
 for /d %%d in ("%RELEASE_X86%\cs","%RELEASE_X86%\de","%RELEASE_X86%\es","%RELEASE_X86%\fr","%RELEASE_X86%\it","%RELEASE_X86%\ja","%RELEASE_X86%\ko","%RELEASE_X86%\pl","%RELEASE_X86%\ru","%RELEASE_X86%\tr","%RELEASE_X86%\zh-Hans","%RELEASE_X86%\zh-Hant") do rd /s /q "%%d" 2>nul
 
-:: [9/9] Gerar checksums
-echo [9/9] Gerando checksums...
+:: [9/10] Gerar checksums
+echo [9/10] Gerando checksums...
 
 :: Checksum x64
 powershell -Command "$files = Get-ChildItem '%RELEASE_X64%' -Recurse -File; $output = @(); foreach ($f in $files) { $hash = (Get-FileHash $f.FullName -Algorithm SHA256).Hash; $rel = $f.FullName.Replace('%RELEASE_X64%\', ''); $output += \"$hash  $rel\" }; $output | Out-File '%RELEASE_X64%\checksums.sha256' -Encoding UTF8"
