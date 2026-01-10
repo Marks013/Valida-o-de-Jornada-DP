@@ -1,0 +1,12 @@
+<Application x:Class="ValidadorJornada.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:ValidadorJornada.Converters"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:BoolToJornadaLabelConverter x:Key="BoolToJornadaLabelConverter"/>
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    </Application.Resources>
+</Application>

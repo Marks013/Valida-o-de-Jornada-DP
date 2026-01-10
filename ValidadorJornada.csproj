@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <AssemblyName>ValidadorJornada</AssemblyName>
+    
+    <!-- *** VERSÃO CENTRALIZADA *** -->
+    <Version>5.1.2</Version>
+    <AssemblyVersion>5.1.2</AssemblyVersion>
+    <FileVersion>5.1.2.0</FileVersion>
+    <InformationalVersion>08/01/2026</InformationalVersion>
+    
+    <!-- *** METADADOS *** -->
+    <Authors>Samuel Fernandes</Authors>
+    <Company>Samuel-DP</Company>
+    <Product>Validador de Jornada DP</Product>
+    <Copyright>Copyright © 2026</Copyright>
+    <Description>Sistema de validação de jornadas de trabalho CLT</Description>
+    
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ✅ DEPENDÊNCIAS UTILIZADAS -->
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="NJsonSchema" Version="11.3.0" />
+    <PackageReference Include="QuestPDF" Version="2024.3.0" />
+    <PackageReference Include="EPPlus" Version="7.5.2" />
+    
+    <!-- ❌ REMOVIDO: Newtonsoft.Json (não utilizado - projeto usa System.Text.Json) -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Resource Include="Resources\icon.ico" />
+  </ItemGroup>
+
+</Project>
